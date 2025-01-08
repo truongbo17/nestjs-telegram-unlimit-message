@@ -1,10 +1,15 @@
-import { DynamicModule, Module } from '@nestjs/common';
+import { DynamicModule, Module, Provider } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import telegramConfig from './config/telegram.config';
 import { TelegramService } from './telegram.service';
 import { HttpModule } from '@nestjs/axios';
-import { TelegramModuleOptions } from './interfaces/telegram-module-option.interface';
+import {
+  TelegramModuleAsyncOptions,
+  TelegramModuleOptions,
+  TelegramOptionsFactory,
+} from './interfaces/telegram-module-option.interface';
 import { createTelegramProvider } from './telegram.provider';
+import { TELEGRAM_MODULE_PROVIDER } from './constants/telegram.constant';
 
 @Module({
   imports: [
@@ -30,6 +35,47 @@ export class TelegramModule {
     return {
       module: TelegramModule,
       providers: createTelegramProvider(options),
+    };
+  }
+
+  static forRootAsync(options: TelegramModuleAsyncOptions): DynamicModule {
+    return {
+      module: TelegramModule,
+      imports: options.imports || [],
+      providers: this.createAsyncProvider(options),
+    };
+  }
+
+  private static createAsyncProvider(
+    options: TelegramModuleAsyncOptions
+  ): Provider[] {
+    if (options.useExisting || options.useFactory) {
+      return [this.createAsyncOptionsProvider(options)];
+    }
+    return [
+      this.createAsyncOptionsProvider(options),
+      {
+        provide: options.useClass,
+        useClass: options.useClass,
+      },
+    ];
+  }
+
+  private static createAsyncOptionsProvider(
+    options: TelegramModuleAsyncOptions
+  ): Provider {
+    if (options.useFactory) {
+      return {
+        provide: TELEGRAM_MODULE_PROVIDER,
+        useFactory: options.useFactory,
+        inject: options.inject || [],
+      };
+    }
+    return {
+      provide: TELEGRAM_MODULE_PROVIDER,
+      useFactory: async (optionsFactory: TelegramOptionsFactory) =>
+        await optionsFactory.createTelegramOptions(),
+      inject: [options.useExisting || options.useClass],
     };
   }
 }
