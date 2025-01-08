@@ -1,8 +1,10 @@
 import { BotInterface } from './bot.interface';
+import { SortBotEnum } from '../enums/sort-bot.enum';
 
 export interface BotClusterInterface {
-  readonly cluster_name: string;
-  bots: BotInterface[];
+  allBots: BotInterface[];
+  botHasWeight: BotInterface[];
+  botNoWeight: BotInterface[];
 
   isEmpty(): boolean;
 
@@ -10,5 +12,5 @@ export interface BotClusterInterface {
 
   count(): number;
 
-  sort(type: string): this;
+  sort(type: SortBotEnum): this;
 }
