@@ -1,1 +1,2 @@
-console.log('test1')
+export * from './interfaces';
+export * from './telegram.module';
