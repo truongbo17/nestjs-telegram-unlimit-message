@@ -42,7 +42,7 @@ export class TelegramService {
     );
   }
 
-  private getBotKey(): string | void {
+  public getBotKey(): string | void {
     if (!this.options.strategy || !this.options.bots) {
       throw new TelegramNotBotKeyException();
     }

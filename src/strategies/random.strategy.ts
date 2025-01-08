@@ -29,18 +29,18 @@ export class RandomStrategy implements StrategyInterface {
   }
 
   private bothRandom(botCluster: BotClusterInterface): BotInterface | null {
-    let proxyNode: BotInterface | null = null;
+    let bot: BotInterface | null = null;
     const maxRetries: number = MAX_RETRIES;
     let attempt: number = 0;
 
     while (attempt < maxRetries) {
       const index: number = Math.floor(Math.random() * botCluster.count());
 
-      proxyNode = botCluster.getBot(index);
+      bot = botCluster.getBot(index);
 
       if (
-        !proxyNode.hasCheckMaxUse(RandomStrategy.name) ||
-        !proxyNode.checkCounter(RandomStrategy.name)
+        !bot.hasCheckMaxUse(RandomStrategy.name) ||
+        !bot.checkCounter(RandomStrategy.name)
       ) {
         break;
       }
@@ -48,7 +48,7 @@ export class RandomStrategy implements StrategyInterface {
       attempt++;
     }
 
-    return proxyNode;
+    return bot;
   }
 
   private hasWeightRandom(
@@ -59,7 +59,7 @@ export class RandomStrategy implements StrategyInterface {
         'No node has weight . Please increase weight for node'
       );
     }
-    let proxyNode: BotInterface | null = null;
+    let bot: BotInterface | null = null;
     const maxRetries: number = MAX_RETRIES;
     let attempt: number = 0;
 
@@ -68,11 +68,11 @@ export class RandomStrategy implements StrategyInterface {
         Math.random() * botCluster.countBotHasWeight()
       );
 
-      proxyNode = botCluster.getBotHasWeight(index);
+      bot = botCluster.getBotHasWeight(index);
 
       if (
-        !proxyNode.hasCheckMaxUse(RandomStrategy.name) ||
-        !proxyNode.checkCounter(RandomStrategy.name)
+        !bot.hasCheckMaxUse(RandomStrategy.name) ||
+        !bot.checkCounter(RandomStrategy.name)
       ) {
         break;
       }
@@ -80,7 +80,7 @@ export class RandomStrategy implements StrategyInterface {
       attempt++;
     }
 
-    return proxyNode;
+    return bot;
   }
 
   private noWeightRandom(botCluster: BotClusterInterface): BotInterface | null {
@@ -89,7 +89,7 @@ export class RandomStrategy implements StrategyInterface {
         'No node has weight . Please increase weight for node'
       );
     }
-    let proxyNode: BotInterface | null = null;
+    let bot: BotInterface | null = null;
     const maxRetries: number = MAX_RETRIES;
     let attempt: number = 0;
 
@@ -98,11 +98,11 @@ export class RandomStrategy implements StrategyInterface {
         Math.random() * botCluster.countBotNoWeight()
       );
 
-      proxyNode = botCluster.getBotNoWeight(index);
+      bot = botCluster.getBotNoWeight(index);
 
       if (
-        !proxyNode.hasCheckMaxUse(RandomStrategy.name) ||
-        !proxyNode.checkCounter(RandomStrategy.name)
+        !bot.hasCheckMaxUse(RandomStrategy.name) ||
+        !bot.checkCounter(RandomStrategy.name)
       ) {
         break;
       }
@@ -110,6 +110,6 @@ export class RandomStrategy implements StrategyInterface {
       attempt++;
     }
 
-    return proxyNode;
+    return bot;
   }
 }
