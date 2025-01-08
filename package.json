@@ -1,0 +1,27 @@
+{
+  "name": "nestjs-telegram-unlimit-message",
+  "version": "1.0.0",
+  "description": "Send message to Telegram unlimited with load balancing strategies",
+  "author": {
+    "email": "truongnq017@gmail.com",
+    "name": "truongbo"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/truongbo17/nestjs-telegram-unlimit-message.git"
+  },
+  "license": "MIT",
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.js",
+  "keywords": [
+    "nest",
+    "nestjs",
+    "telegram",
+    "bot",
+    "send message telegram no limit",
+    "mutiple bot send message"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
