@@ -7,7 +7,7 @@ import {
   TelegramSendMessageParams,
   TelegramUser,
 } from './interfaces/telegram.interface';
-import { AxiosRequestConfig } from 'axios';
+import { AxiosError, AxiosRequestConfig } from 'axios';
 import { HttpService } from '@nestjs/axios';
 import { TelegramRequestException } from './exceptions/telegram-request.exception';
 import { TELEGRAM_MODULE_PROVIDER } from './constants/telegram.constant';
@@ -26,18 +26,6 @@ export class TelegramService {
     private readonly http: HttpService,
     private readonly configService: ConfigService
   ) {}
-
-  public test() {
-    if (!this.options.strategy || !this.options.bots) {
-      throw new TelegramNotBotKeyException();
-    }
-
-    const pickBot: PickBotInterface = new PickBot(this.options.strategy);
-    const clusterBots: BotClusterInterface = new BotCluster(this.options.bots);
-
-    console.log(pickBot.pick(clusterBots).name);
-    console.log(pickBot.pick(clusterBots).name);
-  }
 
   public getMe(): Observable<TelegramUser> {
     return this.handleRequest<TelegramUser>(
@@ -68,6 +56,8 @@ export class TelegramService {
         'Strategy not has key, please try again.'
       );
     }
+
+    return key;
   }
 
   private handleRequest<T>(
@@ -76,7 +66,7 @@ export class TelegramService {
     axiosOptions?: AxiosRequestConfig
   ): Observable<T> {
     const rootUrl: string = this.configService.get<string>('telegram.url');
-    const apiUrl: string = `${rootUrl}${this.getBotKey()}/${endpoint}`;
+    const apiUrl: string = `${rootUrl}${this.getBotKey()}${endpoint}`;
     return this.http.post<TelegramResponse<T>>(apiUrl, data, axiosOptions).pipe(
       map((res: any) => {
         if (!res.data.ok) {
@@ -85,6 +75,11 @@ export class TelegramService {
         return res.data.result;
       }),
       catchError((error: Error) => {
+        if (error instanceof AxiosError) {
+          throw new TelegramRequestException(
+            error?.response?.data?.description || error.message
+          );
+        }
         throw new TelegramRequestException(error.message);
       })
     );
