@@ -1,39 +1,39 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { catchError, map, Observable } from 'rxjs';
 import {
+  TelegramMessage,
   TelegramResponse,
+  TelegramSendMessageParams,
   TelegramUser,
 } from './interfaces/telegram.interface';
 import { AxiosRequestConfig } from 'axios';
 import { HttpService } from '@nestjs/axios';
 import { TelegramRequestException } from './exceptions/telegram-request.exception';
+import { TELEGRAM_MODULE_PROVIDER } from './constants/telegram.constant';
+import { TelegramModuleOptions } from './interfaces/telegram-module-option.interface';
+import { TelegramNotBotKeyException } from './exceptions/telegram-not-bot-key.exception';
+import { BotClusterInterface, PickBotInterface } from './interfaces';
+import { TelegramUnlimitedMessageException } from './exceptions/telegram-unlimited-message.exception';
 import { PickBot } from './pick-bot';
-import { RandomStrategy } from './strategies/random.strategy';
-import { InputRandomStrategyEnum } from './enums/input-random-strategy.enum';
 import { BotCluster } from './bot.cluster';
-import { Bot } from './bot';
 
 @Injectable()
 export class TelegramService {
   constructor(
+    @Inject(TELEGRAM_MODULE_PROVIDER)
+    private readonly options: TelegramModuleOptions,
     private readonly http: HttpService,
     private readonly configService: ConfigService
   ) {}
 
   public test() {
-    const pickBot: PickBot = new PickBot(
-      new RandomStrategy(InputRandomStrategyEnum.NO_WEIGHT)
-    );
-    const clusterBots: BotCluster = new BotCluster('testCluster', [
-      new Bot('bot1', 1),
-      new Bot('bot2'),
-      new Bot('bot3'),
-      new Bot('bot4', 2),
-      new Bot('bot5'),
-    ]);
+    if (!this.options.strategy || !this.options.bots) {
+      throw new TelegramNotBotKeyException();
+    }
 
-    // console.log(pickBot, clusterBots);
+    const pickBot: PickBotInterface = new PickBot(this.options.strategy);
+    const clusterBots: BotClusterInterface = new BotCluster(this.options.bots);
 
     console.log(pickBot.pick(clusterBots).name);
     console.log(pickBot.pick(clusterBots).name);
@@ -45,8 +45,29 @@ export class TelegramService {
     );
   }
 
-  private getBotKey(): string {
-    return '';
+  public sendMessage(
+    data: TelegramSendMessageParams
+  ): Observable<TelegramMessage> {
+    return this.handleRequest<TelegramMessage>(
+      this.configService.get('telegram.sendMessage'),
+      data
+    );
+  }
+
+  private getBotKey(): string | void {
+    if (!this.options.strategy || !this.options.bots) {
+      throw new TelegramNotBotKeyException();
+    }
+
+    const pickBot: PickBotInterface = new PickBot(this.options.strategy);
+    const clusterBots: BotClusterInterface = new BotCluster(this.options.bots);
+
+    const key: string = pickBot.pick(clusterBots).name;
+    if (!key) {
+      throw new TelegramUnlimitedMessageException(
+        'Strategy not has key, please try again.'
+      );
+    }
   }
 
   private handleRequest<T>(

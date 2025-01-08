@@ -1,8 +1,10 @@
-import { Module } from '@nestjs/common';
+import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import telegramConfig from './config/telegram.config';
 import { TelegramService } from './telegram.service';
 import { HttpModule } from '@nestjs/axios';
+import { TelegramModuleOptions } from './interfaces/telegram-module-option.interface';
+import { createTelegramProvider } from './telegram.provider';
 
 @Module({
   imports: [
@@ -23,4 +25,11 @@ import { HttpModule } from '@nestjs/axios';
   providers: [TelegramService],
   exports: [TelegramService],
 })
-export class TelegramModule {}
+export class TelegramModule {
+  static forRoot(options: TelegramModuleOptions): DynamicModule {
+    return {
+      module: TelegramModule,
+      providers: createTelegramProvider(options),
+    };
+  }
+}

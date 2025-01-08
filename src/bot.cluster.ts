@@ -1,15 +1,12 @@
 import { BotClusterInterface, BotInterface } from './interfaces';
-import { SortBotEnum } from './enums/sort-bot.enum';
+import { SortBotEnum } from './enums';
 
 export class BotCluster implements BotClusterInterface {
   allBots: BotInterface[];
   botHasWeight: BotInterface[];
   botNoWeight: BotInterface[];
 
-  constructor(
-    private readonly cluster_name: string,
-    readonly bots: BotInterface[]
-  ) {
+  constructor(readonly bots: BotInterface[]) {
     this.allBots = bots;
     this.botNoWeight = [];
     this.botHasWeight = [];
