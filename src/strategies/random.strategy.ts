@@ -27,13 +27,17 @@ export class RandomStrategy implements StrategyInterface {
     }
   }
 
-  private bothRandom(botCluster: BotClusterInterface): BotInterface | null {}
+  private bothRandom(botCluster: BotClusterInterface): BotInterface | null {
+    return botCluster.getBot(1);
+  }
 
   private hasWeightRandom(
     botCluster: BotClusterInterface
-  ): BotInterface | null {}
+  ): BotInterface | null {
+    return botCluster.getBot(1);
+  }
 
-  private noWeightRandom(
-    botCluster: BotClusterInterface
-  ): BotInterface | null {}
+  private noWeightRandom(botCluster: BotClusterInterface): BotInterface | null {
+    return botCluster.getBot(1);
+  }
 }
