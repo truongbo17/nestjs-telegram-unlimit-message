@@ -5,4 +5,8 @@ export interface BotInterface {
   readonly maxWaitUse?: number | null;
   readonly maxFail: number;
   readonly failTimeOutSecond?: number;
+
+  checkCounter(className: string): boolean;
+
+  hasCheckMaxUse(className: string): boolean;
 }

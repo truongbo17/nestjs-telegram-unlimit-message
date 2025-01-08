@@ -13,4 +13,16 @@ export interface BotClusterInterface {
   count(): number;
 
   sort(type: SortBotEnum): this;
+
+  isEmptyBotHasWeight(): boolean;
+
+  getBotHasWeight(index: number): BotInterface | null;
+
+  getBotNoWeight(index: number): BotInterface | null;
+
+  isEmptyBotNoWeight(): boolean;
+
+  countBotHasWeight(): number;
+
+  countBotNoWeight(): number;
 }

@@ -6,6 +6,7 @@ import {
 import { InputRandomStrategyEnum } from '../enums/input-random-strategy.enum';
 import { EmptyBotException } from '../exceptions/empty-bot.exception';
 import { InputRandomStrategyException } from '../exceptions/input-random-strategy.exception';
+import { MAX_RETRIES } from '../constants/random-strategy.constant';
 
 export class RandomStrategy implements StrategyInterface {
   constructor(private readonly inputRandom: InputRandomStrategyEnum) {}
@@ -28,16 +29,87 @@ export class RandomStrategy implements StrategyInterface {
   }
 
   private bothRandom(botCluster: BotClusterInterface): BotInterface | null {
-    return botCluster.getBot(1);
+    let proxyNode: BotInterface | null = null;
+    const maxRetries: number = MAX_RETRIES;
+    let attempt: number = 0;
+
+    while (attempt < maxRetries) {
+      const index: number = Math.floor(Math.random() * botCluster.count());
+
+      proxyNode = botCluster.getBot(index);
+
+      if (
+        !proxyNode.hasCheckMaxUse(RandomStrategy.name) ||
+        !proxyNode.checkCounter(RandomStrategy.name)
+      ) {
+        break;
+      }
+
+      attempt++;
+    }
+
+    return proxyNode;
   }
 
   private hasWeightRandom(
     botCluster: BotClusterInterface
   ): BotInterface | null {
-    return botCluster.getBot(1);
+    if (botCluster.isEmptyBotHasWeight()) {
+      throw new EmptyBotException(
+        'No node has weight . Please increase weight for node'
+      );
+    }
+    let proxyNode: BotInterface | null = null;
+    const maxRetries: number = MAX_RETRIES;
+    let attempt: number = 0;
+
+    while (attempt < maxRetries) {
+      const index: number = Math.floor(
+        Math.random() * botCluster.countBotHasWeight()
+      );
+
+      proxyNode = botCluster.getBotHasWeight(index);
+
+      if (
+        !proxyNode.hasCheckMaxUse(RandomStrategy.name) ||
+        !proxyNode.checkCounter(RandomStrategy.name)
+      ) {
+        break;
+      }
+
+      attempt++;
+    }
+
+    return proxyNode;
   }
 
   private noWeightRandom(botCluster: BotClusterInterface): BotInterface | null {
-    return botCluster.getBot(1);
+    if (botCluster.isEmptyBotNoWeight()) {
+      throw new EmptyBotException(
+        'No node has weight . Please increase weight for node'
+      );
+    }
+    let proxyNode: BotInterface | null = null;
+    const maxRetries: number = MAX_RETRIES;
+    let attempt: number = 0;
+
+    while (attempt < maxRetries) {
+      const index: number = Math.floor(
+        Math.random() * botCluster.countBotNoWeight()
+      );
+
+      proxyNode = botCluster.getBotNoWeight(index);
+
+      if (
+        !proxyNode.hasCheckMaxUse(RandomStrategy.name) ||
+        !proxyNode.checkCounter(RandomStrategy.name)
+      ) {
+        break;
+      }
+
+      attempt++;
+    }
+
+    return proxyNode;
   }
 }

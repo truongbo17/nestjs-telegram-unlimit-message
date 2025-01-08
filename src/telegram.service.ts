@@ -8,6 +8,11 @@ import {
 import { AxiosRequestConfig } from 'axios';
 import { HttpService } from '@nestjs/axios';
 import { TelegramRequestException } from './exceptions/telegram-request.exception';
+import { PickBot } from './pick-bot';
+import { RandomStrategy } from './strategies/random.strategy';
+import { InputRandomStrategyEnum } from './enums/input-random-strategy.enum';
+import { BotCluster } from './bot.cluster';
+import { Bot } from './bot';
 
 @Injectable()
 export class TelegramService {
@@ -15,6 +20,24 @@ export class TelegramService {
     private readonly http: HttpService,
     private readonly configService: ConfigService
   ) {}
+
+  public test() {
+    const pickBot: PickBot = new PickBot(
+      new RandomStrategy(InputRandomStrategyEnum.NO_WEIGHT)
+    );
+    const clusterBots: BotCluster = new BotCluster('testCluster', [
+      new Bot('bot1', 1),
+      new Bot('bot2'),
+      new Bot('bot3'),
+      new Bot('bot4', 2),
+      new Bot('bot5'),
+    ]);
+
+    // console.log(pickBot, clusterBots);
+
+    console.log(pickBot.pick(clusterBots).name);
+    console.log(pickBot.pick(clusterBots).name);
+  }
 
   public getMe(): Observable<TelegramUser> {
     return this.handleRequest<TelegramUser>(

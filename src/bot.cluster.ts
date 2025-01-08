@@ -7,34 +7,37 @@ export class BotCluster implements BotClusterInterface {
   botNoWeight: BotInterface[];
 
   constructor(
-    readonly bots: BotInterface[],
-    private readonly cluster_name: string
+    private readonly cluster_name: string,
+    readonly bots: BotInterface[]
   ) {
     this.allBots = bots;
+    this.botNoWeight = [];
+    this.botHasWeight = [];
+
     this.handleWeight();
   }
 
-  public getNodeHasWeight(index: number): BotInterface | null {
+  public getBotHasWeight(index: number): BotInterface | null {
     return this.botHasWeight?.[index] ?? null;
   }
 
-  public getNodeNoWeight(index: number): BotInterface | null {
+  public getBotNoWeight(index: number): BotInterface | null {
     return this.botNoWeight?.[index] ?? null;
   }
 
-  public isEmptyNodeHasWeight(): boolean {
+  public isEmptyBotHasWeight(): boolean {
     return this.botHasWeight.length < 1;
   }
 
-  public isEmptyNodeNoWeight(): boolean {
+  public isEmptyBotNoWeight(): boolean {
     return this.botNoWeight.length < 1;
   }
 
-  public countNodeHasWeight(): number {
+  public countBotHasWeight(): number {
     return this.botHasWeight.length;
   }
 
-  public countNodeNoWeight(): number {
+  public countBotNoWeight(): number {
     return this.botNoWeight.length;
   }
 
