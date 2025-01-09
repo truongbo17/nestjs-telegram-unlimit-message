@@ -20,6 +20,60 @@
 $ npm install nestjs-telegram-unlimit-message
 ```
 
+## Quick use
+
+- Using in module:
+
+```typescript
+// For root
+@Module({
+  imports: [
+    TelegramModule.forRoot({
+      strategy: new RandomStrategy(InputRandomStrategyEnum.BOTH),
+      bots: [
+        new Bot('bot1', 0),
+        new Bot('bot2', 20),
+        new Bot('bot3', 100),
+        new Bot('bot4', 0),
+      ],
+    })
+  ]
+})
+
+// For root async
+@Module({
+  imports: [
+    TelegramModule.forRootAsync({
+      useFactory: async (configService: ConfigService) => ({
+        strategy: new WeightedRoundRobinStrategy(),
+        bots: [
+          new Bot(configService.get('bot1'), 2),
+          new Bot(configService.get('bot2')),
+          new Bot(configService.get('bot3'), 1),
+          new Bot(configService.get('bot4'), 2),
+        ],
+      }),
+      inject: [ConfigService],
+    }),
+  ],
+})
+```
+
+- Using in service:
+
+```typescript
+@Injectable()
+export class TestService {
+
+  constructor(private readonly telegram: TelegramService) {
+  }
+
+  getMeBot(): Observable<TelegramUser> {
+    return this.telegram.getMe();
+  }
+}
+```
+
 -------------------
 
 ## Strategies
