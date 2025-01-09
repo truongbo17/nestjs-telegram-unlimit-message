@@ -56,7 +56,7 @@
       "check-whitespace"
     ],
     "prefer-const": true,
-    "quotemark": [true, "single", "warn"],
+    "quotemark": [true, "single"],
     "radix": false,
     "semicolon": [true, "always"],
     "trailing-comma": true,
