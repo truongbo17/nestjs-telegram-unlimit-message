@@ -1,6 +1,6 @@
 {
   "name": "nestjs-telegram-unlimit-message",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Send message to Telegram unlimited with load balancing strategies",
   "author": {
     "email": "truongnq017@gmail.com",
