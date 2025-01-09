@@ -3,7 +3,7 @@ import {
   BotInterface,
   StrategyInterface,
 } from '../interfaces';
-import { InputRandomStrategyEnum } from '../enums/input-random-strategy.enum';
+import { InputRandomStrategyEnum } from '../enums';
 import { EmptyBotException } from '../exceptions/empty-bot.exception';
 import { InputRandomStrategyException } from '../exceptions/input-random-strategy.exception';
 import { MAX_RETRIES } from '../constants/random-strategy.constant';

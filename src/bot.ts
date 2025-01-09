@@ -66,6 +66,10 @@ export class Bot implements BotInterface {
     return false;
   }
 
+  public getWeight(): number {
+    return this.weight;
+  }
+
   private counter(className: string): void {
     const botCounter: CacheCounterBotType = this.cache.get(
       `${className}_${this.name}`

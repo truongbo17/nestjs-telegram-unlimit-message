@@ -9,4 +9,6 @@ export interface BotInterface {
   checkCounter(className: string): boolean;
 
   hasCheckMaxUse(className: string): boolean;
+
+  getWeight(): number;
 }
