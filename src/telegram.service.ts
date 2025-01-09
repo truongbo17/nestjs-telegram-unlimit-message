@@ -1,15 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { catchError, map, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import {
   TelegramMessage,
   TelegramResponse,
   TelegramSendMessageParams,
   TelegramUser,
 } from './interfaces/telegram.interface';
-import { AxiosError, AxiosRequestConfig } from 'axios';
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { HttpService } from '@nestjs/axios';
-import { TelegramRequestException } from './exceptions/telegram-request.exception';
 import { TELEGRAM_MODULE_PROVIDER } from './constants/telegram.constant';
 import { TelegramModuleOptions } from './interfaces/telegram-module-option.interface';
 import { TelegramNotBotKeyException } from './exceptions/telegram-not-bot-key.exception';
@@ -27,16 +26,16 @@ export class TelegramService {
     private readonly configService: ConfigService
   ) {}
 
-  public getMe(): Observable<TelegramUser> {
-    return this.handleRequest<TelegramUser>(
+  public getMe(): Observable<AxiosResponse<TelegramResponse<TelegramUser>>> {
+    return this.handleRequest<TelegramResponse<TelegramUser>>(
       this.configService.get('telegram.getMe')
     );
   }
 
   public sendMessage(
     data: TelegramSendMessageParams
-  ): Observable<TelegramMessage> {
-    return this.handleRequest<TelegramMessage>(
+  ): Observable<AxiosResponse<TelegramResponse<TelegramMessage>>> {
+    return this.handleRequest<TelegramResponse<TelegramMessage>>(
       this.configService.get('telegram.sendMessage'),
       data
     );
@@ -64,19 +63,9 @@ export class TelegramService {
     endpoint: string,
     data: object = {},
     axiosOptions?: AxiosRequestConfig
-  ): Observable<T> {
+  ): Observable<AxiosResponse<T>> {
     const rootUrl: string = this.configService.get<string>('telegram.url');
     const apiUrl: string = `${rootUrl}${this.getBotKey()}${endpoint}`;
-    return this.http.post<TelegramResponse<T>>(apiUrl, data, axiosOptions).pipe(
-      map((res: any) => {
-        if (!res.data.ok) {
-          throw new TelegramRequestException(res.data.description);
-        }
-        return res.data.result;
-      }),
-      catchError((error: Error) => {
-        throw new TelegramRequestException(error.message);
-      })
-    );
+    return this.http.post(apiUrl, data, axiosOptions);
   }
 }
