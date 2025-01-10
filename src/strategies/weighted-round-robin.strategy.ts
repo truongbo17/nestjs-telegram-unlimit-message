@@ -26,7 +26,11 @@ export class WeightedRoundRobinStrategy implements StrategyInterface {
 
     while (attempt < maxRetries) {
       if (this.counterBotWeight < 1) {
-        const index: number = this.counter++ % botCluster.countBotHasWeight();
+        let idCounter: number =
+          this.chatIdCounters.get(botCluster.getChatId() as string) ||
+          this.counter;
+        const index: number = idCounter++ % botCluster.countBotHasWeight();
+        this.chatIdCounters.set(botCluster.getChatId() as string, idCounter);
 
         bot = botCluster.getBotHasWeight(index);
 
