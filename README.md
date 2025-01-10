@@ -240,7 +240,7 @@ Output:
 
 ## Author
 
-- [Nguyen Quang Truong](https://github.com/truongbo17)
+- [Nguyen Quang Truong](https://github.com/truongbo17) - [truongnq017@gmail.com](mailto:truongnq017@gmail.com)
 
 -------------------
 
