@@ -17,12 +17,9 @@ import { BotClusterInterface, PickBotInterface } from './interfaces';
 import { TelegramUnlimitedMessageException } from './exceptions/telegram-unlimited-message.exception';
 import { PickBot } from './pick-bot';
 import { BotCluster } from './bot.cluster';
-import NodeCache from 'node-cache';
 
 @Injectable()
 export class TelegramService {
-  private readonly cache: NodeCache = new NodeCache();
-
   constructor(
     @Inject(TELEGRAM_MODULE_PROVIDER)
     private readonly options: TelegramModuleOptions,
