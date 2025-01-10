@@ -12,7 +12,7 @@
     "import-spacing": true,
     "indent": [true, "spaces"],
     "interface-name": false,
-    "interface-over-type-literal": true,
+    "interface-over-type-literal": false,
     "label-position": true,
     "max-line-length": [true, 140],
     "member-access": false,
