@@ -13,7 +13,7 @@ export class RoundRobinStrategy implements StrategyInterface {
     this.chatIdCounters = new Map<string, number>();
   }
 
-  getBot(botCluster: BotClusterInterface): BotInterface | null {
+  async getBot(botCluster: BotClusterInterface): Promise<BotInterface | null> {
     if (botCluster.isEmpty()) {
       throw new EmptyBotException();
     }
@@ -32,8 +32,14 @@ export class RoundRobinStrategy implements StrategyInterface {
       bot = botCluster.getBot(index);
 
       if (
-        !bot.hasCheckMaxUse(RoundRobinStrategy.name, botCluster.getChatId()) ||
-        !bot.checkCounter(RoundRobinStrategy.name, botCluster.getChatId())
+        !(await bot.hasCheckMaxUse(
+          RoundRobinStrategy.name,
+          botCluster.getChatId()
+        )) ||
+        !(await bot.checkCounter(
+          RoundRobinStrategy.name,
+          botCluster.getChatId()
+        ))
       ) {
         break;
       }

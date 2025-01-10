@@ -6,5 +6,5 @@ export interface PickBotInterface {
   pick(
     botCluster: BotClusterInterface,
     callback?: CallbackType
-  ): BotInterface | null;
+  ): Promise<BotInterface | null>;
 }

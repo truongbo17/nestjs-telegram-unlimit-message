@@ -1,6 +1,5 @@
 import { BotInterface } from './interfaces';
 import { InputMaxUserBotException } from './exceptions/input-max-user-bot.exception';
-import NodeCache from 'node-cache';
 import { CacheCounterBotType } from './types/cache-counter-bot.type';
 import moment from 'moment';
 import {
@@ -8,9 +7,10 @@ import {
   MIN_USE,
   START_COUNTER,
 } from './constants/bot.constant';
+import NodeCache from 'node-cache';
 
 export class Bot implements BotInterface {
-  private readonly cache: NodeCache = new NodeCache();
+  private cache: any;
 
   constructor(
     public readonly name: string,
@@ -29,29 +29,38 @@ export class Bot implements BotInterface {
     ) {
       throw new InputMaxUserBotException();
     }
+
+    this.cache = new NodeCache();
   }
 
-  public hasCheckMaxUse(
+  public setCacheProvide(cacheService?: any): void {
+    if (cacheService) {
+      this.cache = cacheService;
+    }
+  }
+
+  public async hasCheckMaxUse(
     className: string,
     chatId: string | number | undefined
-  ): boolean {
+  ): Promise<boolean> {
     if (this.maxUse !== null && this.maxWaitUse !== null) {
-      this.counter(className, chatId);
+      await this.counterCheck(className, chatId);
       return true;
     }
     return false;
   }
 
-  public checkCounter(
+  public async checkCounter(
     className: string,
     chatId: string | number | undefined
-  ): boolean {
+  ): Promise<boolean> {
     let cacheKey: string = `${className}_${this.name}`;
     if (chatId) {
       cacheKey = `${cacheKey}_${chatId}`;
     }
+
     const botCounter: CacheCounterBotType | undefined =
-      this.cache.get(cacheKey);
+      await this.cache.get(cacheKey);
 
     if (botCounter && botCounter.counter >= this.maxUse) {
       if (!botCounter.time) {
@@ -59,7 +68,7 @@ export class Bot implements BotInterface {
           .add(this.maxWaitUse, 'seconds')
           .toISOString();
 
-        this.cache.set(
+        await this.cache.set(
           cacheKey,
           {
             counter: botCounter.counter,
@@ -68,7 +77,7 @@ export class Bot implements BotInterface {
           CACHE_TTL_SECOND
         );
       } else if (moment(botCounter.time).isBefore(moment())) {
-        this.cache.del(cacheKey);
+        await this.cache.del(cacheKey);
         return false;
       }
       return true;
@@ -80,15 +89,17 @@ export class Bot implements BotInterface {
     return this.weight;
   }
 
-  private counter(
+  async counterCheck(
     className: string,
     chatId: string | number | undefined
-  ): void {
+  ): Promise<void> {
     let cacheKey: string = `${className}_${this.name}`;
     if (chatId) {
       cacheKey = `${cacheKey}_${chatId}`;
     }
-    const botCounter: CacheCounterBotType = this.cache.get(cacheKey) || {
+    const botCounter: CacheCounterBotType = (await this.cache.get(
+      cacheKey
+    )) || {
       counter: START_COUNTER,
       time: null,
     };
@@ -98,6 +109,6 @@ export class Bot implements BotInterface {
       time: botCounter.time,
     };
 
-    this.cache.set(cacheKey, updatedData, CACHE_TTL_SECOND);
+    await this.cache.set(cacheKey, updatedData, CACHE_TTL_SECOND);
   }
 }

@@ -8,13 +8,14 @@ export class BotCluster implements BotClusterInterface {
 
   constructor(
     readonly bots: BotInterface[],
-    private readonly chatId?: string | number
+    private readonly chatId?: string | number,
+    cacheService?: any
   ) {
     this.allBots = bots;
     this.botNoWeight = [];
     this.botHasWeight = [];
 
-    this.handleWeight();
+    this.handleWeight(cacheService);
   }
 
   public getChatId(): string | number | undefined {
@@ -66,9 +67,14 @@ export class BotCluster implements BotClusterInterface {
     return this;
   }
 
-  private handleWeight(): void {
+  private handleWeight(cacheService?: any): void {
     this.bots.forEach((bot: BotInterface, index: number) => {
       bot.index = index;
+
+      if (cacheService) {
+        bot.setCacheProvide(cacheService);
+      }
+
       if (bot.weight > 0) {
         this.botHasWeight.push(bot);
       } else {

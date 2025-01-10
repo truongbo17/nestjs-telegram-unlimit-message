@@ -12,7 +12,9 @@ export class FrequencyStrategy implements StrategyInterface {
     private readonly depth: number = 0.2
   ) {}
 
-  public getBot(botCluster: BotClusterInterface): BotInterface | null {
+  public async getBot(
+    botCluster: BotClusterInterface
+  ): Promise<BotInterface | null> {
     if (botCluster.isEmpty()) {
       throw new EmptyBotException();
     }
@@ -33,8 +35,14 @@ export class FrequencyStrategy implements StrategyInterface {
       bot = botCluster.getBot(index);
 
       if (
-        !bot.hasCheckMaxUse(FrequencyStrategy.name, botCluster.getChatId()) ||
-        !bot.checkCounter(FrequencyStrategy.name, botCluster.getChatId())
+        !(await bot.hasCheckMaxUse(
+          FrequencyStrategy.name,
+          botCluster.getChatId()
+        )) ||
+        !(await bot.checkCounter(
+          FrequencyStrategy.name,
+          botCluster.getChatId()
+        ))
       ) {
         break;
       }

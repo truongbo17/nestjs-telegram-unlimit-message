@@ -15,7 +15,9 @@ export class WeightedRoundRobinStrategy implements StrategyInterface {
     this.chatIdCounters = new Map<string, number>();
   }
 
-  getBot(botCluster: BotClusterInterface): BotInterface | null {
+  public async getBot(
+    botCluster: BotClusterInterface
+  ): Promise<BotInterface | null> {
     if (botCluster.isEmptyBotNoWeight()) {
       throw new EmptyBotException();
     }
@@ -46,14 +48,14 @@ export class WeightedRoundRobinStrategy implements StrategyInterface {
       bot = botCluster.getBotHasWeight(this.indexBotWeight);
 
       if (
-        !bot.hasCheckMaxUse(
+        !(await bot.hasCheckMaxUse(
           WeightedRoundRobinStrategy.name,
           botCluster.getChatId()
-        ) ||
-        !bot.checkCounter(
+        )) ||
+        !(await bot.checkCounter(
           WeightedRoundRobinStrategy.name,
           botCluster.getChatId()
-        )
+        ))
       ) {
         break;
       }

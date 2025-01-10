@@ -13,7 +13,11 @@ import { TelegramRequestException } from './exceptions/telegram-request.exceptio
 import { TELEGRAM_MODULE_PROVIDER } from './constants/telegram.constant';
 import { TelegramModuleOptions } from './interfaces/telegram-module-option.interface';
 import { TelegramNotBotKeyException } from './exceptions/telegram-not-bot-key.exception';
-import { BotClusterInterface, PickBotInterface } from './interfaces';
+import {
+  BotClusterInterface,
+  BotInterface,
+  PickBotInterface,
+} from './interfaces';
 import { TelegramUnlimitedMessageException } from './exceptions/telegram-unlimited-message.exception';
 import { PickBot } from './pick-bot';
 import { BotCluster } from './bot.cluster';
@@ -27,24 +31,24 @@ export class TelegramService {
     private readonly configService: ConfigService
   ) {}
 
-  public getMe(): Observable<TelegramUser> {
+  public async getMe(): Promise<Observable<TelegramUser>> {
     return this.handleRequest<TelegramUser>(
-      this.getBotKey() as string,
+      (await this.getBotKey()) as string,
       this.configService.get('telegram.getMe')
     );
   }
 
-  public sendMessage(
+  public async sendMessage(
     data: TelegramSendMessageParams
-  ): Observable<TelegramMessage> {
+  ): Promise<Observable<TelegramMessage>> {
     return this.handleRequest<TelegramMessage>(
-      this.getBotKey(data.chat_id) as string,
+      (await this.getBotKey(data.chat_id)) as string,
       this.configService.get('telegram.sendMessage'),
       data
     );
   }
 
-  public getBotKey(chatId?: number | string): string | void {
+  public async getBotKey(chatId?: number | string): Promise<string | void> {
     if (!this.options.strategy || !this.options.bots) {
       throw new TelegramNotBotKeyException();
     }
@@ -52,17 +56,18 @@ export class TelegramService {
     const pickBot: PickBotInterface = new PickBot(this.options.strategy);
     const clusterBots: BotClusterInterface = new BotCluster(
       this.options.bots,
-      chatId
+      chatId,
+      this.options.cacheService
     );
 
-    const key: string = pickBot.pick(clusterBots).name;
-    if (!key) {
+    const bot: BotInterface = await pickBot.pick(clusterBots);
+    if (!bot.name) {
       throw new TelegramUnlimitedMessageException(
         'Strategy not has key, please try again.'
       );
     }
 
-    return key;
+    return bot.name as string;
   }
 
   private handleRequest<T>(

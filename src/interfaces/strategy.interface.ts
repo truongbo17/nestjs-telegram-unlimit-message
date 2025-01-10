@@ -6,5 +6,5 @@ export interface StrategyInterface {
   getBot(
     botCluster: BotClusterInterface,
     callback?: CallbackType
-  ): BotInterface | null;
+  ): Promise<BotInterface | null>;
 }

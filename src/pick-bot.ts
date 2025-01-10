@@ -9,10 +9,10 @@ import { CallbackType } from './types/callback.type';
 export class PickBot implements PickBotInterface {
   constructor(private readonly strategy: StrategyInterface) {}
 
-  public pick(
+  public async pick(
     botCluster: BotClusterInterface,
     callback?: CallbackType
-  ): BotInterface | null {
-    return this.strategy.getBot(botCluster, callback);
+  ): Promise<BotInterface | null> {
+    return await this.strategy.getBot(botCluster, callback);
   }
 }

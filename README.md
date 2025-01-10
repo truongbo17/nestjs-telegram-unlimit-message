@@ -11,7 +11,7 @@
   the limit per bot cannot be changed, but with more bots you can send more messages**.
 - Based on **Nginx load balancing strategies**, select the appropriate bot to send messages (or perform the tasks you
   want
-  with the bot).
+  with the bot). **Strategies run completely separately for each group and bot**
 - Use only effective, consistent and simple strategies to rotate bots.
 
 -------------------
@@ -72,6 +72,14 @@ export class TestService {
 
   getMeBot(): Observable<TelegramUser> {
     return this.telegram.getMe();
+  }
+
+  async sendMessage() {
+    await lastValueFrom(this.telegramService.sendMessage({
+      chat_id: <string | number>('462374324348932034343...'),
+      text: <string>job.data.message,
+      parse_mode: 'markdown',
+    }))
   }
 }
 ```

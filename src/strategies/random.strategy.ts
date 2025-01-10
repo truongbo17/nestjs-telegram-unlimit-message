@@ -11,24 +11,28 @@ import { MAX_RETRIES } from '../constants/random-strategy.constant';
 export class RandomStrategy implements StrategyInterface {
   constructor(private readonly inputRandom: InputRandomStrategyEnum) {}
 
-  public getBot(botCluster: BotClusterInterface): BotInterface | null {
+  public async getBot(
+    botCluster: BotClusterInterface
+  ): Promise<BotInterface | null> {
     if (botCluster.isEmpty()) {
       throw new EmptyBotException();
     }
 
     switch (this.inputRandom) {
       case InputRandomStrategyEnum.BOTH:
-        return this.bothRandom(botCluster);
+        return await this.bothRandom(botCluster);
       case InputRandomStrategyEnum.HAS_WEIGHT:
-        return this.hasWeightRandom(botCluster);
+        return await this.hasWeightRandom(botCluster);
       case InputRandomStrategyEnum.NO_WEIGHT:
-        return this.noWeightRandom(botCluster);
+        return await this.noWeightRandom(botCluster);
       default:
         throw new InputRandomStrategyException();
     }
   }
 
-  private bothRandom(botCluster: BotClusterInterface): BotInterface | null {
+  private async bothRandom(
+    botCluster: BotClusterInterface
+  ): Promise<BotInterface | null> {
     let bot: BotInterface | null = null;
     const maxRetries: number = MAX_RETRIES;
     let attempt: number = 0;
@@ -39,8 +43,11 @@ export class RandomStrategy implements StrategyInterface {
       bot = botCluster.getBot(index);
 
       if (
-        !bot.hasCheckMaxUse(RandomStrategy.name, botCluster.getChatId()) ||
-        !bot.checkCounter(RandomStrategy.name, botCluster.getChatId())
+        !(await bot.hasCheckMaxUse(
+          RandomStrategy.name,
+          botCluster.getChatId()
+        )) ||
+        !(await bot.checkCounter(RandomStrategy.name, botCluster.getChatId()))
       ) {
         break;
       }
@@ -51,9 +58,9 @@ export class RandomStrategy implements StrategyInterface {
     return bot;
   }
 
-  private hasWeightRandom(
+  private async hasWeightRandom(
     botCluster: BotClusterInterface
-  ): BotInterface | null {
+  ): Promise<BotInterface | null> {
     if (botCluster.isEmptyBotHasWeight()) {
       throw new EmptyBotException(
         'No node has weight . Please increase weight for node'
@@ -71,8 +78,11 @@ export class RandomStrategy implements StrategyInterface {
       bot = botCluster.getBotHasWeight(index);
 
       if (
-        !bot.hasCheckMaxUse(RandomStrategy.name, botCluster.getChatId()) ||
-        !bot.checkCounter(RandomStrategy.name, botCluster.getChatId())
+        !(await bot.hasCheckMaxUse(
+          RandomStrategy.name,
+          botCluster.getChatId()
+        )) ||
+        !(await bot.checkCounter(RandomStrategy.name, botCluster.getChatId()))
       ) {
         break;
       }
@@ -83,7 +93,9 @@ export class RandomStrategy implements StrategyInterface {
     return bot;
   }
 
-  private noWeightRandom(botCluster: BotClusterInterface): BotInterface | null {
+  private async noWeightRandom(
+    botCluster: BotClusterInterface
+  ): Promise<BotInterface | null> {
     if (botCluster.isEmptyBotNoWeight()) {
       throw new EmptyBotException(
         'No node has weight . Please increase weight for node'
@@ -101,8 +113,11 @@ export class RandomStrategy implements StrategyInterface {
       bot = botCluster.getBotNoWeight(index);
 
       if (
-        !bot.hasCheckMaxUse(RandomStrategy.name, botCluster.getChatId()) ||
-        !bot.checkCounter(RandomStrategy.name, botCluster.getChatId())
+        !(await bot.hasCheckMaxUse(
+          RandomStrategy.name,
+          botCluster.getChatId()
+        )) ||
+        !(await bot.checkCounter(RandomStrategy.name, botCluster.getChatId()))
       ) {
         break;
       }

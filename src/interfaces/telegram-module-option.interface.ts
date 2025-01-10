@@ -5,6 +5,7 @@ import { ModuleMetadata, Type } from '@nestjs/common';
 export interface TelegramModuleOptions {
   strategy: StrategyInterface;
   bots: BotInterface[];
+  cacheService?: any;
 }
 
 export interface TelegramOptionsFactory {
