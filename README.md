@@ -102,9 +102,9 @@ export class TestService {
 - inputRandom : How are proxies random?
 
 ```txt
-- both : All proxy nodes are random
-- has_weight : Only the weighted proxy node will be random
-- no_weight : Only proxy nodes without weights can be random
+- both : All bots are random
+- has_weight : Only the weighted bots will be random
+- no_weight : Only bots without weights can be random
 ```
 
 Config:
@@ -200,14 +200,14 @@ Output:
 +-------------+
 ```
 
-* You can interfere with proxy usage for a certain period of time if the proxy is restricted from
+* You can interfere with bot usage for a certain period of time if the bot is restricted from
   use.
 
 --------------------
 
 ## Weighted Round Robin
 
-The number of times this proxy node is called is the weight parameter passed in the initialization of the ProxyNode
+The number of times this bot node is called is the weight parameter passed in the initialization of the Bot
 (counter : start counting from somewhere)
 
 ```typescript
@@ -234,7 +234,7 @@ Output:
 +-------------+
 ```
 
-* Proxy Node without weight will not be used
+* Bot without weight will not be used
 
 -------------------
 
