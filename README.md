@@ -6,11 +6,13 @@
 
 ## Description
 
-- [Telegram](https://telegram.org) API wrapper for the Telegram Bots API made to work with
-  the [Nest](https://github.com/nestjs/nest) framework.
-- Based on Nginx load balancing strategies, select the appropriate bot to send messages (or perform the tasks you want
-  with the bot)
-- Use only effective, consistent and simple strategies to rotate proxies
+- Telegram limit by: number of bots in groups upto 20, message sending frequency in group chats
+  up to 20 messages per minute in the same chat. So with 1 minute each account can send up to 400 messages. **In short,
+  the limit per bot cannot be changed, but with more bots you can send more messages**.
+- Based on **Nginx load balancing strategies**, select the appropriate bot to send messages (or perform the tasks you
+  want
+  with the bot).
+- Use only effective, consistent and simple strategies to rotate bots.
 
 -------------------
 

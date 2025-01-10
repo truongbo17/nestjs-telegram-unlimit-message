@@ -39,10 +39,12 @@ export class TelegramModule {
   }
 
   static forRootAsync(options: TelegramModuleAsyncOptions): DynamicModule {
+    const provider: Provider[] = this.createAsyncProvider(options);
     return {
       module: TelegramModule,
       imports: options.imports || [],
-      providers: this.createAsyncProvider(options),
+      providers: provider,
+      exports: provider,
     };
   }
 

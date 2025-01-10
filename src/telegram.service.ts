@@ -77,10 +77,11 @@ export class TelegramService {
       catchError((error: Error) => {
         if (error instanceof AxiosError) {
           throw new TelegramRequestException(
-            error?.response?.data?.description || error.message
+            `${error?.response?.status} - ${error?.code} - ${error?.response?.data?.description}` ||
+              error?.message
           );
         }
-        throw new TelegramRequestException(error.message);
+        throw new TelegramRequestException(error?.message);
       })
     );
   }
