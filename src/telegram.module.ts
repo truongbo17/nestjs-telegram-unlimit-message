@@ -21,8 +21,8 @@ import { TELEGRAM_MODULE_PROVIDER } from './constants/telegram.constant';
       useFactory: (
         configService: ConfigService
       ): { maxRedirects: number; timeout: number } => ({
-        timeout: <number>configService.get('api.timeout'),
-        maxRedirects: <number>configService.get('api.maxRedirects'),
+        timeout: configService.get('api.timeout') as number,
+        maxRedirects: configService.get('api.maxRedirects' as number),
       }),
       inject: [ConfigService],
     }),
