@@ -22,7 +22,7 @@ import { TELEGRAM_MODULE_PROVIDER } from './constants/telegram.constant';
         configService: ConfigService
       ): { maxRedirects: number; timeout: number } => ({
         timeout: configService.get('api.timeout') as number,
-        maxRedirects: configService.get('api.maxRedirects' as number),
+        maxRedirects: configService.get('api.maxRedirects') as number,
       }),
       inject: [ConfigService],
     }),
