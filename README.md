@@ -13,6 +13,7 @@
   want
   with the bot). **Strategies run completely separately for each group and bot**
 - Use only effective, consistent and simple strategies to rotate bots.
+- Use Cache with redis if you have **more than 1 service**...
 
 -------------------
 
@@ -46,7 +47,7 @@ $ npm install nestjs-telegram-unlimit-message
 @Module({
   imports: [
     TelegramModule.forRootAsync({
-      useFactory: async (configService: ConfigService) => ({
+      useFactory: async (configService: ConfigService, cacheService: CacheService) => ({
         strategy: new WeightedRoundRobinStrategy(),
         bots: [
           new Bot(configService.get('bot1'), 2),
@@ -54,8 +55,9 @@ $ npm install nestjs-telegram-unlimit-message
           new Bot(configService.get('bot3'), 1),
           new Bot(configService.get('bot4'), 2),
         ],
+        cacheService, // [Recommend] CacheService class should have set, get, del methods
       }),
-      inject: [ConfigService],
+      inject: [ConfigService, CacheService],
     }),
   ],
 })
