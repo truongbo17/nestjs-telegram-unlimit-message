@@ -9,8 +9,11 @@ import { MAX_RETRIES } from '../constants/random-strategy.constant';
 export class WeightedRoundRobinStrategy implements StrategyInterface {
   private counterBotWeight: number = 0;
   private indexBotWeight: number | null = null;
+  private chatIdCounters: Map<string, number>;
 
-  constructor(private counter: number = 0) {}
+  constructor(private counter: number = 0) {
+    this.chatIdCounters = new Map<string, number>();
+  }
 
   getBot(botCluster: BotClusterInterface): BotInterface | null {
     if (botCluster.isEmptyBotNoWeight()) {
