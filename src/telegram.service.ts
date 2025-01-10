@@ -17,9 +17,12 @@ import { BotClusterInterface, PickBotInterface } from './interfaces';
 import { TelegramUnlimitedMessageException } from './exceptions/telegram-unlimited-message.exception';
 import { PickBot } from './pick-bot';
 import { BotCluster } from './bot.cluster';
+import NodeCache from 'node-cache';
 
 @Injectable()
 export class TelegramService {
+  private readonly cache: NodeCache = new NodeCache();
+
   constructor(
     @Inject(TELEGRAM_MODULE_PROVIDER)
     private readonly options: TelegramModuleOptions,
@@ -29,6 +32,7 @@ export class TelegramService {
 
   public getMe(): Observable<TelegramUser> {
     return this.handleRequest<TelegramUser>(
+      this.getBotKey() as string,
       this.configService.get('telegram.getMe')
     );
   }
@@ -37,18 +41,22 @@ export class TelegramService {
     data: TelegramSendMessageParams
   ): Observable<TelegramMessage> {
     return this.handleRequest<TelegramMessage>(
+      this.getBotKey(data.chat_id) as string,
       this.configService.get('telegram.sendMessage'),
       data
     );
   }
 
-  public getBotKey(): string | void {
+  public getBotKey(chatId?: number | string): string | void {
     if (!this.options.strategy || !this.options.bots) {
       throw new TelegramNotBotKeyException();
     }
 
     const pickBot: PickBotInterface = new PickBot(this.options.strategy);
-    const clusterBots: BotClusterInterface = new BotCluster(this.options.bots);
+    const clusterBots: BotClusterInterface = new BotCluster(
+      this.options.bots,
+      chatId
+    );
 
     const key: string = pickBot.pick(clusterBots).name;
     if (!key) {
@@ -61,12 +69,13 @@ export class TelegramService {
   }
 
   private handleRequest<T>(
+    botKey: string,
     endpoint: string,
     data: object = {},
     axiosOptions?: AxiosRequestConfig
   ): Observable<T> {
     const rootUrl: string = this.configService.get<string>('telegram.url');
-    const apiUrl: string = `${rootUrl}${this.getBotKey()}${endpoint}`;
+    const apiUrl: string = `${rootUrl}${botKey}${endpoint}`;
     return this.http.post<TelegramResponse<T>>(apiUrl, data, axiosOptions).pipe(
       map((res: any) => {
         if (!res.data.ok) {

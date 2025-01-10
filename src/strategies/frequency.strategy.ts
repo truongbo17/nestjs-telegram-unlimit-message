@@ -33,8 +33,8 @@ export class FrequencyStrategy implements StrategyInterface {
       bot = botCluster.getBot(index);
 
       if (
-        !bot.hasCheckMaxUse(FrequencyStrategy.name) ||
-        !bot.checkCounter(FrequencyStrategy.name)
+        !bot.hasCheckMaxUse(FrequencyStrategy.name, botCluster.getChatId()) ||
+        !bot.checkCounter(FrequencyStrategy.name, botCluster.getChatId())
       ) {
         break;
       }

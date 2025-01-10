@@ -1,4 +1,5 @@
 export interface BotInterface {
+  index: number;
   readonly name: string;
   readonly weight: number;
   readonly maxUse?: number | null;
@@ -6,9 +7,12 @@ export interface BotInterface {
   readonly maxFail: number;
   readonly failTimeOutSecond?: number;
 
-  checkCounter(className: string): boolean;
+  checkCounter(className: string, chatId: string | number | undefined): boolean;
 
-  hasCheckMaxUse(className: string): boolean;
+  hasCheckMaxUse(
+    className: string,
+    chatId: string | number | undefined
+  ): boolean;
 
   getWeight(): number;
 }

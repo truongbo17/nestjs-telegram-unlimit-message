@@ -39,8 +39,8 @@ export class RandomStrategy implements StrategyInterface {
       bot = botCluster.getBot(index);
 
       if (
-        !bot.hasCheckMaxUse(RandomStrategy.name) ||
-        !bot.checkCounter(RandomStrategy.name)
+        !bot.hasCheckMaxUse(RandomStrategy.name, botCluster.getChatId()) ||
+        !bot.checkCounter(RandomStrategy.name, botCluster.getChatId())
       ) {
         break;
       }
@@ -71,8 +71,8 @@ export class RandomStrategy implements StrategyInterface {
       bot = botCluster.getBotHasWeight(index);
 
       if (
-        !bot.hasCheckMaxUse(RandomStrategy.name) ||
-        !bot.checkCounter(RandomStrategy.name)
+        !bot.hasCheckMaxUse(RandomStrategy.name, botCluster.getChatId()) ||
+        !bot.checkCounter(RandomStrategy.name, botCluster.getChatId())
       ) {
         break;
       }
@@ -101,8 +101,8 @@ export class RandomStrategy implements StrategyInterface {
       bot = botCluster.getBotNoWeight(index);
 
       if (
-        !bot.hasCheckMaxUse(RandomStrategy.name) ||
-        !bot.checkCounter(RandomStrategy.name)
+        !bot.hasCheckMaxUse(RandomStrategy.name, botCluster.getChatId()) ||
+        !bot.checkCounter(RandomStrategy.name, botCluster.getChatId())
       ) {
         break;
       }

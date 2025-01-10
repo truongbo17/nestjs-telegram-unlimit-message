@@ -6,12 +6,19 @@ export class BotCluster implements BotClusterInterface {
   botHasWeight: BotInterface[];
   botNoWeight: BotInterface[];
 
-  constructor(readonly bots: BotInterface[]) {
+  constructor(
+    readonly bots: BotInterface[],
+    private readonly chatId?: string | number
+  ) {
     this.allBots = bots;
     this.botNoWeight = [];
     this.botHasWeight = [];
 
     this.handleWeight();
+  }
+
+  public getChatId(): string | number | undefined {
+    return this.chatId;
   }
 
   public getBotHasWeight(index: number): BotInterface | null {
@@ -60,7 +67,8 @@ export class BotCluster implements BotClusterInterface {
   }
 
   private handleWeight(): void {
-    this.bots.forEach((bot: BotInterface) => {
+    this.bots.forEach((bot: BotInterface, index: number) => {
+      bot.index = index;
       if (bot.weight > 0) {
         this.botHasWeight.push(bot);
       } else {

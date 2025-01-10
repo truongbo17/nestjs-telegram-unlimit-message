@@ -18,7 +18,8 @@ export class Bot implements BotInterface {
     public readonly maxUse: number | null = null,
     public readonly maxWaitUse: number | null = null,
     public readonly maxFail: number = 10,
-    public readonly failTimeOutSecond: number = 90
+    public readonly failTimeOutSecond: number = 90,
+    public readonly index: number = 0
   ) {
     if (
       !this.maxFail &&
@@ -30,18 +31,27 @@ export class Bot implements BotInterface {
     }
   }
 
-  public hasCheckMaxUse(className: string): boolean {
+  public hasCheckMaxUse(
+    className: string,
+    chatId: string | number | undefined
+  ): boolean {
     if (this.maxUse !== null && this.maxWaitUse !== null) {
-      this.counter(className);
+      this.counter(className, chatId);
       return true;
     }
     return false;
   }
 
-  public checkCounter(className: string): boolean {
-    const botCounter: CacheCounterBotType | undefined = this.cache.get(
-      `${className}_${this.name}`
-    );
+  public checkCounter(
+    className: string,
+    chatId: string | number | undefined
+  ): boolean {
+    let cacheKey: string = `${className}_${this.name}`;
+    if (chatId) {
+      cacheKey = `${cacheKey}_${chatId}`;
+    }
+    const botCounter: CacheCounterBotType | undefined =
+      this.cache.get(cacheKey);
 
     if (botCounter && botCounter.counter >= this.maxUse) {
       if (!botCounter.time) {
@@ -50,7 +60,7 @@ export class Bot implements BotInterface {
           .toISOString();
 
         this.cache.set(
-          `${className}_${this.name}`,
+          cacheKey,
           {
             counter: botCounter.counter,
             time: waitTime,
@@ -58,7 +68,7 @@ export class Bot implements BotInterface {
           CACHE_TTL_SECOND
         );
       } else if (moment(botCounter.time).isBefore(moment())) {
-        this.cache.del(`${className}_${this.name}`);
+        this.cache.del(cacheKey);
         return false;
       }
       return true;
@@ -70,10 +80,15 @@ export class Bot implements BotInterface {
     return this.weight;
   }
 
-  private counter(className: string): void {
-    const botCounter: CacheCounterBotType = this.cache.get(
-      `${className}_${this.name}`
-    ) || {
+  private counter(
+    className: string,
+    chatId: string | number | undefined
+  ): void {
+    let cacheKey: string = `${className}_${this.name}`;
+    if (chatId) {
+      cacheKey = `${cacheKey}_${chatId}`;
+    }
+    const botCounter: CacheCounterBotType = this.cache.get(cacheKey) || {
       counter: START_COUNTER,
       time: null,
     };
@@ -83,6 +98,6 @@ export class Bot implements BotInterface {
       time: botCounter.time,
     };
 
-    this.cache.set(`${className}_${this.name}`, updatedData, CACHE_TTL_SECOND);
+    this.cache.set(cacheKey, updatedData, CACHE_TTL_SECOND);
   }
 }

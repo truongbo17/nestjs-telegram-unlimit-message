@@ -24,8 +24,8 @@ export class RoundRobinStrategy implements StrategyInterface {
       bot = botCluster.getBot(index);
 
       if (
-        !bot.hasCheckMaxUse(RoundRobinStrategy.name) ||
-        !bot.checkCounter(RoundRobinStrategy.name)
+        !bot.hasCheckMaxUse(RoundRobinStrategy.name, botCluster.getChatId()) ||
+        !bot.checkCounter(RoundRobinStrategy.name, botCluster.getChatId())
       ) {
         break;
       }

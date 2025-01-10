@@ -4,6 +4,7 @@ import {
   StrategyInterface,
 } from '../interfaces';
 import { EmptyBotException } from '../exceptions/empty-bot.exception';
+import { MAX_RETRIES } from '../constants/random-strategy.constant';
 
 export class WeightedRoundRobinStrategy implements StrategyInterface {
   private counterBotWeight: number = 0;
@@ -16,20 +17,42 @@ export class WeightedRoundRobinStrategy implements StrategyInterface {
       throw new EmptyBotException();
     }
 
-    if (this.counterBotWeight < 1) {
-      const index: number = this.counter++ % botCluster.countBotHasWeight();
+    let bot: BotInterface | null = null;
+    const maxRetries: number = MAX_RETRIES;
+    let attempt: number = 0;
 
-      const bot: BotInterface = botCluster.getBotHasWeight(index);
+    while (attempt < maxRetries) {
+      if (this.counterBotWeight < 1) {
+        const index: number = this.counter++ % botCluster.countBotHasWeight();
 
-      if (bot.getWeight() > 1) {
-        this.counterBotWeight = bot.getWeight() - 1;
-        this.indexBotWeight = index;
+        bot = botCluster.getBotHasWeight(index);
+
+        if (bot.getWeight() > 1) {
+          this.counterBotWeight = bot.getWeight() - 1;
+          this.indexBotWeight = index;
+        } else {
+          return bot;
+        }
       } else {
-        return bot;
+        this.counterBotWeight--;
       }
-    } else {
-      this.counterBotWeight--;
+      bot = botCluster.getBotHasWeight(this.indexBotWeight);
+
+      if (
+        !bot.hasCheckMaxUse(
+          WeightedRoundRobinStrategy.name,
+          botCluster.getChatId()
+        ) ||
+        !bot.checkCounter(
+          WeightedRoundRobinStrategy.name,
+          botCluster.getChatId()
+        )
+      ) {
+        break;
+      }
+
+      attempt++;
     }
-    return botCluster.getBotHasWeight(this.indexBotWeight);
+    return bot;
   }
 }

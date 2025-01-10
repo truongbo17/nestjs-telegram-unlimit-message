@@ -1,5 +1,5 @@
 import { BotInterface } from './bot.interface';
-import { SortBotEnum } from '../enums/sort-bot.enum';
+import { SortBotEnum } from '../enums';
 
 export interface BotClusterInterface {
   allBots: BotInterface[];
@@ -25,4 +25,6 @@ export interface BotClusterInterface {
   countBotHasWeight(): number;
 
   countBotNoWeight(): number;
+
+  getChatId(): string | number | undefined;
 }

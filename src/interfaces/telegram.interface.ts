@@ -1835,7 +1835,7 @@ export class TelegramException extends BadRequestException {
  *
  */
 
-interface TelegramChatId {
+export interface TelegramChatId {
   /**
    * Unique identifier for the target group or username of the target supergroup or channel (in the format `@channelusername`)
    */
